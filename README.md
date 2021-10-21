@@ -1,2 +1,2 @@
-# symfony-gridview-widget-bundle
+# symfony-gridview-bundle
 A gridview widget for symfony

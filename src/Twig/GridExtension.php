@@ -33,19 +33,11 @@ class GridExtension extends AbstractExtension
      */
     public function prepareGridView(GridView $gridView)
     {
-        try {
-            return $this->twig->createTemplate($gridView->renderGrid())->render();
-        }catch (\Exception $exception){
-            return 'OEPS:<pre>'.print_r($exception->getTraceAsString(), 1).'</pre>';
-        }
-
         $renderParams = [];
-
         $filterForm = $gridView->getFormBuilder();
 
         if ($filterForm) {
-            $renderParams[$gridView->getId()]
-                = $gridView->getFormBuilder()->getForm()->createView();
+            $renderParams[$gridView->getId()] = $gridView->getFormBuilder()->getForm()->createView();
         }
 
         return $this->twig->createTemplate($gridView->renderGrid())->render(

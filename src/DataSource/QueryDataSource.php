@@ -36,11 +36,11 @@ class QueryDataSource extends BaseDataSource
         $this->dataSource->setMaxResults($this->pagination->getPageSize())
             ->setFirstResult($this->pagination->getOffset());
 
-//        $sortParams = $this->getSort()->fetchOrders();
-//
-//        foreach ($sortParams as $fieldName => $sortType) {
-//            $this->dataSource->addOrderBy($fieldName, $sortType);
-//        }
+        $sortParams = $this->getSort()->fetchOrders();
+
+        foreach ($sortParams as $fieldName => $sortType) {
+            $this->dataSource->addOrderBy($fieldName, $sortType);
+        }
 
         return $this->dataSource->getQuery()->getResult();
     }

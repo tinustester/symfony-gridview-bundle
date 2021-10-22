@@ -53,3 +53,6 @@ services:
 
   Tinustester\Bundle\GridviewBundle\GridviewFactory:
     alias: 'tt_grid.grid_view_factory'
+
+  Tinustester\Bundle\GridviewBundle\Component\Sort:
+    alias: 'tt_grid.sort'

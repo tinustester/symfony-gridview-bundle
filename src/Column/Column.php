@@ -46,21 +46,20 @@ class Column extends BaseColumn
             );
         }
 
-        //$sort = $this->gridView->getDataSource()->getSort();
+        $sort = $this->gridView->getDataSource()->getSort();
 
         $label = $this->label ?: TextFormat::camelCaseToWord(
             $this->attributeName
         );
 
-//        if ($this->sortable) {
-//            $sortAttribute = $sort->hasAttribute($this->label)
-//                ? $label : $sort->hasAttribute($this->attributeName)
-//                    ? $this->attributeName : null;
-//
-//            if ($sortAttribute) {
-//                return $sort->createLink($sortAttribute, ['label' => $label]);
-//            }
-//        }
+        if ($this->sortable) {
+            $sortAttribute = $sort->hasAttribute($this->label) ? $label : ($sort->hasAttribute($this->attributeName)
+                ? $this->attributeName : null);
+
+            if ($sortAttribute) {
+                return $sort->createLink($sortAttribute, ['label' => $label]);
+            }
+        }
 
         return $label;
     }

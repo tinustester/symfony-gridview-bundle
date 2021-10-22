@@ -153,7 +153,7 @@ class GridviewFactory
         $formBuilder = $this->container->get('form.factory')
             ->createNamedBuilder(
                 $this->gridView->getDataSource()->getEntityShortName(),
-                \Symfony\Component\HttpKernel\Kernel::VERSION_ID < 20800 ? 'form' : FormType::class,
+                FormType::class,
                 $entityInstance,
                 [
                     'csrf_protection' => false,

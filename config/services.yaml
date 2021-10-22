@@ -1,0 +1,55 @@
+services:
+  tt_grid.html:
+    class:  Tinustester\Bundle\GridviewBundle\Helper\Html
+
+  tt_grid.column_format:
+    class:  Tinustester\Bundle\GridviewBundle\Column\ColumnFormat
+
+  tt_grid.column:
+    class:  Tinustester\Bundle\GridviewBundle\Column\Column
+    public: true
+    shared: false
+    arguments:
+      - '@tt_grid.column_format'
+    calls:
+      - setHtml: ['@tt_grid.html']
+
+  tt_grid.view:
+    class: Tinustester\Bundle\GridviewBundle\Gridview
+    calls:
+      - setHtml: ['@tt_grid.html']
+
+  tt_grid.twig_extension:
+    class: Tinustester\Bundle\GridviewBundle\Twig\GridExtension
+    arguments:
+      - '@twig'
+    tags:
+      - 'twig.extension'
+
+  tt_grid.pagination:
+    class: Tinustester\Bundle\GridviewBundle\Component\Pagination
+    arguments:
+      - '@request_stack'
+
+  tt_grid.sort:
+    class: Tinustester\Bundle\GridviewBundle\Component\Sort
+    arguments:
+      - '@request_stack'
+      - '@router'
+    calls:
+      - setHtml: ['@tt_grid.html']
+
+  tt_grid.query_data_source:
+    class: Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource
+    calls:
+      - setPagination: ['@tt_grid.pagination']
+      - setSort: ['@tt_grid.sort']
+
+  tt_grid.grid_view_factory:
+    class: Tinustester\Bundle\GridviewBundle\GridviewFactory
+    arguments:
+      - '@tt_grid.view'
+      - '@service_container'
+
+  Tinustester\Bundle\GridviewBundle\GridviewFactory:
+    alias: 'tt_grid.grid_view_factory'

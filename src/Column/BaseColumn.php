@@ -2,6 +2,7 @@
 
 namespace Tinustester\Bundle\GridviewBundle\Column;
 
+use Tinustester\Bundle\GridviewBundle\Gridview;
 use Tinustester\Bundle\GridviewBundle\Helper\Html;
 use Tinustester\Bundle\GridviewBundle\Exception\ColumnException;
 

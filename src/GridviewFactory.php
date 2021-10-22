@@ -3,6 +3,7 @@
 namespace Tinustester\Bundle\GridviewBundle;
 
 use Tinustester\Bundle\GridviewBundle\Column\BaseColumn;
+use Tinustester\Bundle\GridviewBundle\Column\Column;
 use Tinustester\Bundle\GridviewBundle\Exception\GridException;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Tinustester\Bundle\GridviewBundle\DataSource\BaseDataSource;
@@ -24,20 +25,19 @@ class GridviewFactory
     /**
      * @var string
      */
-    protected $defaultColumnService = 'av_grid.column';
+    protected $defaultColumnService = 'tt_grid.column';
 
     /**
      * GridFactory constructor.
      *
      * @param GridView $gridView
-     * @param ContainerInterface $container
+     * @param ContainerInterface|\Psr\Container\ContainerInterface $container
      */
     public function __construct(
         GridView $gridView,
-        ContainerInterface $container
+        ContainerInterface|\Psr\Container\ContainerInterface $container,
     ) {
         $this->gridView = $gridView;
-
         $this->container = $container;
     }
 
@@ -214,7 +214,7 @@ class GridviewFactory
     {
         $columns = [];
 
-        $columns[] = ['service' => 'av_grid.counter_column'];
+        //$columns[] = ['service' => 'tt_grid.counter_column'];
 
         if (
             !empty($gridViewData['columns'])
@@ -232,7 +232,7 @@ class GridviewFactory
         }
 
         if ($gridViewData['dataSource'] instanceof QueryDataSource) {
-            $columns[] = ['service' => 'av_grid.action_column'];
+            $columns[] = ['service' => 'tt_grid.action_column'];
         }
 
         return $this->filterColumn($gridViewData, $columns);

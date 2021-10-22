@@ -1,0 +1,43 @@
+{
+    "name": "tinustester/symfony-gridview-bundle",
+    "description": "A GridView for symfony. Based on kartik gridview",
+    "keywords": [
+        "symfony",
+        "bundle",
+        "widget",
+        "grid",
+        "gridview",
+        "datagrid",
+        "datatable"
+    ],
+    "type": "symfony-bundle",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Lucas",
+            "email": "l.weijers@nobears.nl",
+            "homepage": "https://nobears.nl"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "doctrine/orm": "^2.9",
+        "doctrine/doctrine-bundle": "^2.4",
+        "symfony/config": "^5.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/form": "^5.0",
+        "symfony/http-kernel": "^5.0",
+        "symfony/routing": "^5.0",
+        "twig/twig": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tinustester\\Bundle\\GridviewBundle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tinustester\\Bundle\\GridviewBundle\\Tests\\": "tests/"
+        }
+    }
+}

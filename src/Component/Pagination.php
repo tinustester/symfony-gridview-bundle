@@ -11,49 +11,49 @@ class Pagination
     /**
      * @var int|null Current page number.
      */
-    protected $currentPage;
+    protected ?int $currentPage;
 
     /**
      * @var string Name of query parameter that contains page number.
      */
-    protected $pageParam = 'page';
+    protected string $pageParam = 'page';
 
     /**
      * @var string Name of query parameter that contains number of items on page.
      */
-    protected $pageSizeParam = 'per-page';
+    protected string $pageSizeParam = 'per-page';
 
     /**
      * @var string Name of route. If route was not specified then current route
      * will be used.
      */
-    protected $route;
+    protected string $route;
 
     /**
      * @var int Total number of items.
      */
-    protected $totalCount = 0;
+    protected int $totalCount = 0;
 
     /**
      * @var int Default number of items per page. Will be used if [[$pageSize]]
      * not specified.
      */
-    protected $defaultPageSize = 20;
+    protected int $defaultPageSize = 20;
 
     /**
      * @var int Default limit of items per page.
      */
-    protected $maxPageSize = 50;
+    protected int $maxPageSize = 50;
 
     /**
      * @var int|null Default number of items per page.
      */
-    protected $pageSize;
+    protected ?int $pageSize;
 
     /**
      * @var Request
      */
-    protected $request;
+    protected Request $request;
 
     /**
      * Pagination constructor.
@@ -70,7 +70,7 @@ class Pagination
      *
      * @return int number of pages
      */
-    public function getPageCount()
+    public function getPageCount(): int
     {
         $pageSize = $this->getPageSize();
 
@@ -78,7 +78,7 @@ class Pagination
             return $this->totalCount > 0 ? 1 : 0;
         }
 
-        $totalCount = $this->totalCount < 0 ? 0 : (int)$this->totalCount;
+        $totalCount = $this->totalCount < 0 ? 0 : $this->totalCount;
 
         return (int)(($totalCount + $pageSize - 1) / $pageSize);
     }
@@ -90,7 +90,7 @@ class Pagination
      */
     public function getCurrentPage()
     {
-        if ($this->currentPage === null) {
+        if (!isset($this->currentPage)) {
             $currentPage = (int)$this->request->get($this->pageParam, 1) - 1;
 
             $this->setPage($currentPage);
@@ -134,10 +134,11 @@ class Pagination
      * be used.
      *
      * @return int
+     * @throws PaginationException
      */
-    public function getPageSize()
+    public function getPageSize(): ?int
     {
-        if ($this->pageSize !== null) {
+        if (isset($this->pageSize)) {
             return $this->pageSize;
         }
 
@@ -152,30 +153,18 @@ class Pagination
     }
 
     /**
-     * Set number of items to show per page. By default limit will be used.
+     * Set number of items to show per page.
+     * By default, limit will be used.
      *
      * @param int $pageSize
      * @param bool $useLimit
      *
      * @return $this
-     * @throws PaginationException
      */
-    public function setPageSize($pageSize, $useLimit = true)
+    public function setPageSize(int $pageSize, bool $useLimit = true): static
     {
-        if (!is_numeric($pageSize)) {
-            throw new PaginationException(
-                'The expected type of the '.Pagination::class
-                .' page size is a numeric.'.gettype($pageSize).' given.'
-            );
-        }
-
-        $pageSize = (int)$pageSize;
-
-        if ($useLimit && $pageSize > $this->maxPageSize) {
-            $pageSize = $this->maxPageSize;
-        } elseif ($pageSize < 0) {
-            $pageSize = 0;
-        }
+        $pageSize = $useLimit && $pageSize > $this->maxPageSize ? $this->maxPageSize : $pageSize;
+        $pageSize = $pageSize < 0 ? 0 : $pageSize;
 
         $this->pageSize = $pageSize;
 
@@ -186,8 +175,9 @@ class Pagination
      * Fetch current route name.
      *
      * @return string
+     * @throws PaginationException
      */
-    public function getRoute()
+    public function getRoute(): string
     {
         if (!$this->route) {
             $this->setRoute($this->request->attributes->all()['_route']);
@@ -198,8 +188,9 @@ class Pagination
 
     /**
      * @return int Get offset value that can be used in data source query.
+     * @throws PaginationException
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         $pageSize = $this->getPageSize();
 
@@ -207,9 +198,10 @@ class Pagination
     }
 
     /**
-     * @return int Get limit value that can be used in data source query.]
+     * @return int Get limit value that can be used in data source query.
+     * @throws PaginationException
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         $pageSize = $this->getPageSize();
 
@@ -221,7 +213,7 @@ class Pagination
      *
      * @return string
      */
-    public function getPageParamName()
+    public function getPageParamName(): string
     {
         return $this->pageParam;
     }
@@ -231,7 +223,7 @@ class Pagination
      *
      * @return int
      */
-    public function getDefaultPageSize()
+    public function getDefaultPageSize(): int
     {
         return $this->defaultPageSize;
     }

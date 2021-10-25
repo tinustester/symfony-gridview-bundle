@@ -2,50 +2,57 @@
 
 namespace Tinustester\Bundle\GridviewBundle\Column;
 
+use DateInterval;
+use DateTime;
+use Exception;
+
 /**
  * ColumnFormat used by [[Column]] class to prepare cell data before render.
  * This class format data with twig native functions.
  *
  * It contains five available formats:
  *  html - used by default. Escapes data for the "html" context;
- *  js   - escapes data for the JavaScript context;
  *  raw  - data will be rendered without any escaping;
  *  twig - escapes twig syntax to render it as plain text;
  *  date - prepare data to datetime representation with specified format.
  */
 class ColumnFormat
 {
-    const TEXT_FORMAT = 'html';
+    /** @var string  */
+    public const TEXT_FORMAT = 'html';
 
-    const RAW_FORMAT = 'raw';
+    /** @var string  */
+    public const RAW_FORMAT = 'raw';
 
-    const TWIG_FORMAT = 'twig';
+    /** @var string  */
+    public const TWIG_FORMAT = 'twig';
 
-    const DATE_FORMAT = 'date';
+    /** @var string  */
+    public const DATE_FORMAT = 'date';
 
     /**
      * @var string Default date format. Used in case if [[data]] is instance of
      * [[\DateTime]] or [[\DateInterval]] and date format was not specified.
      */
-    private $defaultDateFormat = 'Y-m-d H:i:s';
+    private string $defaultDateFormat = 'Y-m-d H:i:s';
 
     /**
      * Escape data with certain escape format.
      *
-     * @param string $data
-     * @param string $format
+     * @param string|object $data
+     * @param string|array $format
      *
      * @return string
      */
-    public function format($data, $format)
+    public function format($data, $format): string
     {
         if (
             is_object($data)
-            && !($data instanceof \DateTime)
-            && !($data instanceof \DateInterval)
+            && !($data instanceof DateTime)
+            && !($data instanceof DateInterval)
         ) {
             throw new \InvalidArgumentException(
-                'Only to '.\DateTime::class.' and '.\DateInterval::class
+                'Only to '. DateTime::class.' and '. DateInterval::class
                 .' instances grid column format can be applied. '
                 .gettype($data).' given.'
             );
@@ -80,10 +87,9 @@ class ColumnFormat
      *
      * @return string|array
      */
-    protected function normalizeCurrentFormat($data, $format)
+    protected function normalizeCurrentFormat($data, $format): array|string
     {
-        if (($data instanceof \DateTime) || ($data instanceof \DateInterval)) {
-
+        if (($data instanceof DateTime) || ($data instanceof DateInterval)) {
             if (!is_array($format) || key($format) !== self::DATE_FORMAT) {
                 return [self::DATE_FORMAT => $this->defaultDateFormat];
             }
@@ -100,7 +106,7 @@ class ColumnFormat
      * @return string
      * @throws \RuntimeException
      */
-    protected function getFormatMethodName($format)
+    protected function getFormatMethodName($format): string
     {
         $formatName = is_array($format) ? key($format) : $format;
 
@@ -117,25 +123,22 @@ class ColumnFormat
      * Convert data to specified date format. $dateTime parameter can contain
      * timestamp or instance of \DateInterval or \DateTime classes.
      *
-     * @param string|int|\DateInterval|\DateTime $dateTime
-     * @param string|array $format
+     * @param string|int|DateInterval|DateTime $dateTime
+     * @param array|string $format
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function dateFormat($dateTime, $format)
+    protected function dateFormat($dateTime, array|string $format): string
     {
         if (is_string($dateTime) || is_numeric($dateTime)) {
             return "{{ '".$dateTime."'|date('".$format."') }}";
         }
 
-        if (
-            !($dateTime instanceof \DateInterval)
-            && !($dateTime instanceof \DateTime)
-        ) {
-            throw new \Exception(
-                'Invalid date instance. Expected '.\DateTime::class
-                .' or '.\DateInterval::class.' instances.'
+        if (!($dateTime instanceof DateInterval) && !($dateTime instanceof DateTime)) {
+            throw new Exception(
+                'Invalid date instance. Expected '. DateTime::class
+                .' or '. DateInterval::class.' instances.'
             );
         }
 
@@ -149,21 +152,9 @@ class ColumnFormat
      *
      * @return string
      */
-    protected function htmlFormat($data)
+    protected function htmlFormat(string $data): string
     {
         return "{{ '".addslashes($data)."'|escape('html') }}";
-    }
-
-    /**
-     * Escapes a string for the JS context.
-     *
-     * @param string $data
-     *
-     * @return string
-     */
-    protected function jsFormat($data)
-    {
-        return "{{ '".$data."'|escape('js') }}";
     }
 
     /**
@@ -173,7 +164,7 @@ class ColumnFormat
      *
      * @return string
      */
-    protected function rawFormat($data)
+    protected function rawFormat($data): string
     {
         return $data;
     }
@@ -185,7 +176,7 @@ class ColumnFormat
      *
      * @return string
      */
-    protected function twigFormat($data)
+    protected function twigFormat(string $data): string
     {
         return "{% verbatim %}".$data."{% endverbatim %}";
     }

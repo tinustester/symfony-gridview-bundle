@@ -16,6 +16,7 @@ services:
 
   tt_grid.view:
     class: Tinustester\Bundle\GridviewBundle\Gridview
+    shared: false
     calls:
       - setHtml: ['@tt_grid.html']
 
@@ -28,11 +29,13 @@ services:
 
   tt_grid.pagination:
     class: Tinustester\Bundle\GridviewBundle\Component\Pagination
+    shared: false
     arguments:
       - '@request_stack'
 
   tt_grid.sort:
     class: Tinustester\Bundle\GridviewBundle\Component\Sort
+    shared: false
     arguments:
       - '@request_stack'
       - '@router'
@@ -41,6 +44,7 @@ services:
 
   tt_grid.query_data_source:
     class: Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource
+    shared: false
     calls:
       - setPagination: ['@tt_grid.pagination']
       - setSort: ['@tt_grid.sort']

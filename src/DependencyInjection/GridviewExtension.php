@@ -28,18 +28,6 @@ class GridviewExtension extends Extension
         $loader->load('services.yaml');
 
         $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
-//        foreach ($this->servicesWithCompatibilityIssue as $serviceName) {
-//
-//            $definition = $container->getDefinition($serviceName);
-//
-//            if (Kernel::MAJOR_VERSION == 2 && Kernel::MINOR_VERSION < 8) {
-//                $definition->setScope('prototype');
-//            } else {
-//                $definition->setShared(false);
-//            }
-//        }
-
+        $this->processConfiguration($configuration, $configs);
     }
 }

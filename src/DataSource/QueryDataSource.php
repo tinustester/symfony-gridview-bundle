@@ -5,35 +5,35 @@ namespace Tinustester\Bundle\GridviewBundle\DataSource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Tinustester\Bundle\GridviewBundle\Component\Sort;
-use Tinustester\Bundle\GridviewBundle\DataSource\BaseDataSource;
 use Tinustester\Bundle\GridviewBundle\Exception\DataSourceException;
+use Tinustester\Bundle\GridviewBundle\Exception\PaginationException;
 
 class QueryDataSource extends BaseDataSource
 {
     /**
      * @var string
      */
-    private $rootAlias;
+    private string $rootAlias;
 
     /**
      * @var QueryBuilder
      */
-    protected $dataSource;
+    protected QueryBuilder $dataSource;
 
     /**
      * @var ServiceEntityRepository
      */
-    protected $entityRepository;
+    protected ServiceEntityRepository $entityRepository;
 
     /**
      * @inheritdoc
+     * @throws PaginationException
      */
     public function fetchEntities()
     {
-        //return $this->getTotalCount();
         $this->pagination->setTotalCount($this->getTotalCount());
-
-        $this->dataSource->setMaxResults($this->pagination->getPageSize())
+        $this->dataSource
+            ->setMaxResults($this->pagination->getPageSize())
             ->setFirstResult($this->pagination->getOffset());
 
         $sortParams = $this->getSort()->fetchOrders();
@@ -50,17 +50,16 @@ class QueryDataSource extends BaseDataSource
      *
      * @return $this
      */
-    public function setDataSource(QueryBuilder $queryBuilder)
+    public function setDataSource(QueryBuilder $queryBuilder): static
     {
         $this->dataSource = $queryBuilder;
-
         return $this;
     }
 
     /**
      * @return QueryBuilder
      */
-    public function getDataSource()
+    public function getDataSource(): QueryBuilder
     {
         return $this->dataSource;
     }
@@ -70,17 +69,16 @@ class QueryDataSource extends BaseDataSource
      *
      * @return $this
      */
-    public function setEntityRepository(ServiceEntityRepository $entityRepository)
+    public function setEntityRepository(ServiceEntityRepository $entityRepository): static
     {
         $this->entityRepository = $entityRepository;
-
         return $this;
     }
 
     /**
      * @return ServiceEntityRepository
      */
-    public function getEntityRepository()
+    public function getEntityRepository(): ServiceEntityRepository
     {
         return $this->entityRepository;
     }
@@ -91,7 +89,7 @@ class QueryDataSource extends BaseDataSource
      *
      * @return Sort
      */
-    public function getSort()
+    public function getSort(): Sort
     {
         $sortAttributes = $this->sort->getAttributes();
 
@@ -140,7 +138,7 @@ class QueryDataSource extends BaseDataSource
     /**
      * @return string
      */
-    public function getRootAlias()
+    public function getRootAlias(): string
     {
         if (!$this->rootAlias) {
             $this->rootAlias = $this->getEntityShortName();
@@ -158,17 +156,9 @@ class QueryDataSource extends BaseDataSource
      * @return $this
      * @throws DataSourceException
      */
-    public function setRootAlias($rootAlias)
+    public function setRootAlias(string $rootAlias): static
     {
-        if (!is_string($rootAlias)) {
-            throw new DataSourceException(
-                'The expected type of the '.self::class
-                .' alias value is string . '.gettype($rootAlias).' given.'
-            );
-        }
-
         $this->rootAlias = $rootAlias;
-
         return $this;
     }
 }

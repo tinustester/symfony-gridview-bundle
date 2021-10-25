@@ -11,12 +11,12 @@ class Column extends BaseColumn
      * @var string Entity field name. If content parameter is empty then content
      * will be taken from instance of entity by specific attribute name.
      */
-    protected $attributeName;
+    protected string $attributeName;
 
     /**
      * @var string
      */
-    protected $format = ColumnFormat::TEXT_FORMAT;
+    protected string $format = ColumnFormat::TEXT_FORMAT;
 
     /**
      * @var mixed Filter input field type. Can apply one of Symfony form input
@@ -28,7 +28,7 @@ class Column extends BaseColumn
     /**
      * @var array List of options that will be applied to filter input field
      */
-    protected $filterFieldOptions = [];
+    protected array $filterFieldOptions = [];
 
     /**
      * Get column header cell content. If label value was specified it will be
@@ -38,7 +38,7 @@ class Column extends BaseColumn
      * @return string
      * @throws ColumnException
      */
-    public function getHeaderCellContent()
+    public function getHeaderCellContent(): string
     {
         if (!$this->label && !$this->attributeName) {
             throw new ColumnException(
@@ -46,13 +46,11 @@ class Column extends BaseColumn
             );
         }
 
-        $sort = $this->gridView->getDataSource()->getSort();
-
-        $label = $this->label ?: TextFormat::camelCaseToWord(
-            $this->attributeName
-        );
+        $label = $this->label ?: TextFormat::camelCaseToWord($this->attributeName);
 
         if ($this->sortable) {
+            $sort = $this->gridView->getDataSource()->getSort();
+
             $sortAttribute = $sort->hasAttribute($this->label) ? $label : ($sort->hasAttribute($this->attributeName)
                 ? $this->attributeName : null);
 
@@ -70,7 +68,7 @@ class Column extends BaseColumn
      *
      * @return bool
      */
-    public function initColumnFilter()
+    public function initColumnFilter(): bool
     {
         if (!$this->gridView->getFilterEntity() || !$this->attributeName) {
             return false;
@@ -88,15 +86,15 @@ class Column extends BaseColumn
     /**
      * @inheritdoc
      */
-    public function renderFilterCellContent()
+    public function renderFilterCellContent(): string
     {
         if (!$this->gridView->getFilterEntity() || !$this->attributeName) {
             return parent::renderFilterCellContent();
         }
 
-        return '<td '.$this->html->prepareTagAttributes($this->filterOptions)
-            .'>{{ form_widget('.$this->gridView->getId().'.'.$this->attributeName
-            .') }}</td>';
+        return '<td ' . $this->html->prepareTagAttributes($this->filterOptions)
+            . '>{{ form_widget(' . $this->gridView->getId() . '.' . $this->attributeName
+            . ') }}</td>';
     }
 
     /**
@@ -106,24 +104,20 @@ class Column extends BaseColumn
      * @param int $index
      *
      * @return mixed|null
+     * @throws ColumnException
      */
-    public function getCellContent($entityInstance, $index)
+    public function getCellContent(object $entityInstance, int $index)
     {
         if (is_callable($this->content)) {
-            return call_user_func_array(
-                $this->content,
-                [$entityInstance, $index]
-            );
+            return call_user_func_array($this->content, [$entityInstance, $index]);
         }
 
         $currentInstance = $entityInstance;
 
         if (strpos($this->attributeName, '.')) {
-
             $attributes = explode('.', $this->attributeName);
 
             foreach ($attributes as $attribute) {
-
                 $attribute = trim($attribute);
 
                 $currentInstance = $this->getFromArray(
@@ -149,8 +143,9 @@ class Column extends BaseColumn
      * @param string $attributeName
      *
      * @return mixed|null
+     * @throws ColumnException
      */
-    private function getFromArray($entityInstance, $attributeName)
+    private function getFromArray($entityInstance, string $attributeName)
     {
         if (
             preg_match_all(
@@ -184,33 +179,27 @@ class Column extends BaseColumn
      * @return mixed|null
      * @throws ColumnException
      */
-    public function getAttributeValue($entityInstance, $attributeName)
+    public function getAttributeValue($entityInstance, string $attributeName)
     {
         if (is_array($entityInstance)) {
-            return array_key_exists($attributeName, $entityInstance)
-                ? $entityInstance[$attributeName] : '';
+            return array_key_exists($attributeName, $entityInstance) ? $entityInstance[$attributeName] : '';
         }
 
         if ($attributeName) {
             $entityValueGetterName = null;
 
             foreach (['get', 'is'] as $methodPrefix) {
-
-                $methodName = $methodPrefix.ucfirst(
-                        $attributeName
-                    );
+                $methodName = $methodPrefix . ucfirst($attributeName);
 
                 if (method_exists($entityInstance, $methodName)) {
                     $entityValueGetterName = $methodName;
-
                     break;
                 }
             }
 
             if (!$entityValueGetterName) {
                 throw new ColumnException(
-                    get_class($entityInstance).' has no property\''
-                    .$attributeName.'\'.'
+                    get_class($entityInstance) . ' has no (getter) property ' . $attributeName
                 );
             }
 
@@ -228,32 +217,24 @@ class Column extends BaseColumn
      * @return string
      * @throws ColumnException
      */
-    public function renderCellContent(
-        $entityInstance,
-        $index,
-        $emptyCellContent = null
-    ) {
+    public function renderCellContent($entityInstance, int $index, $emptyCellContent = null): string
+    {
         if (!is_object($entityInstance) && !is_array($entityInstance)) {
             throw new ColumnException(
                 'Entity instance of grid column must be an be object or array. '
-                .gettype($entityInstance).' given.'
+                . gettype($entityInstance) . ' given.'
             );
         }
 
         $cellContent = $this->getCellContent($entityInstance, $index);
 
         if (!is_null($cellContent)) {
-            $cellContent = $this->columnFormat->format(
-                $cellContent,
-                $this->format
-            );
+            $cellContent = $this->columnFormat->format($cellContent, $this->format);
         } else {
             $cellContent = $emptyCellContent;
         }
 
-        return '<td '.$this->html->prepareTagAttributes(
-                $this->contentOptions
-            ).'>'.$cellContent.'</td>';
+        return '<td ' . $this->html->prepareTagAttributes($this->contentOptions) . '>' . $cellContent . '</td>';
     }
 
     /**
@@ -262,17 +243,9 @@ class Column extends BaseColumn
      * @return $this
      * @throws ColumnException
      */
-    public function setAttributeName($attributeName)
+    public function setAttributeName(string $attributeName): static
     {
-        if (!is_string($attributeName)) {
-            throw new ColumnException(
-                'The expected type of the '.self::class
-                .' attribute name is string. '.gettype($attributeName).' given.'
-            );
-        }
-
         $this->attributeName = $attributeName;
-
         return $this;
     }
 
@@ -281,10 +254,9 @@ class Column extends BaseColumn
      *
      * @return $this
      */
-    public function setFilterType($filterType)
+    public function setFilterType(string $filterType): static
     {
         $this->filterType = $filterType;
-
         return $this;
     }
 
@@ -293,20 +265,16 @@ class Column extends BaseColumn
      *
      * @return $this
      */
-    public function setFilterFieldOptions(array $filterFieldOptions)
+    public function setFilterFieldOptions(array $filterFieldOptions): static
     {
-        $this->filterFieldOptions = array_merge(
-            $this->filterFieldOptions,
-            $filterFieldOptions
-        );
-
+        $this->filterFieldOptions = array_merge($this->filterFieldOptions, $filterFieldOptions);
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getAttributeName()
+    public function getAttributeName(): string
     {
         return $this->attributeName;
     }

@@ -9,14 +9,8 @@ class TextFormat
      *
      * @return string
      */
-    public static function camelCaseToWord($value)
+    public static function camelCaseToWord(string $value): string
     {
-        if (!is_string($value)) {
-            throw new \InvalidArgumentException(
-                'String expected. '.gettype($value).' given.'
-            );
-        }
-
         return ucfirst(
             trim(
                 str_replace(

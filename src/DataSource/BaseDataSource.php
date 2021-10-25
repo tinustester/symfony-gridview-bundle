@@ -11,47 +11,49 @@ abstract class BaseDataSource
     /**
      * @var string Full class name of target entity.
      */
-    protected $entityName;
+    protected string $entityName;
 
     /**
      * @var mixed
      */
-    protected $dataSource;
+    protected \Doctrine\ORM\QueryBuilder $dataSource;
 
     /**
      * @var Pagination
      */
-    protected $pagination;
+    protected Pagination $pagination;
 
     /**
      * @var Sort
      */
-    protected $sort;
+    protected Sort $sort;
 
     /**
      * @param Pagination $pagination
      *
      * @return $this
      */
-    public function setPagination(Pagination $pagination)
+    public function setPagination(Pagination $pagination): static
     {
         $this->pagination = $pagination;
-
         return $this;
     }
 
     /**
      * @param Sort $sort
+     *
+     * @return BaseDataSource
      */
-    public function setSort(Sort $sort)
+    public function setSort(Sort $sort): static
     {
         $this->sort = $sort;
+        return $this;
     }
 
     /**
      * @return Pagination
      */
-    public function getPagination()
+    public function getPagination(): Pagination
     {
         return $this->pagination;
     }
@@ -59,7 +61,7 @@ abstract class BaseDataSource
     /**
      * @return Sort
      */
-    public function getSort()
+    public function getSort(): Sort
     {
         return $this->sort;
     }
@@ -69,7 +71,7 @@ abstract class BaseDataSource
      *
      * @return int
      */
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return count($this->dataSource);
     }
@@ -80,17 +82,9 @@ abstract class BaseDataSource
      * @return $this
      * @throws DataSourceException
      */
-    public function setEntityName($entityName)
+    public function setEntityName(string $entityName): static
     {
-        if (!is_string($entityName)) {
-            throw new DataSourceException(
-                'The expected type of the '.self::class
-                .' entity name is string . '.gettype($entityName).' given.'
-            );
-        }
-
         $this->entityName = $entityName;
-
         return $this;
     }
 
@@ -99,7 +93,7 @@ abstract class BaseDataSource
      *
      * @return bool|string
      */
-    public function getEntityShortName()
+    public function getEntityShortName(): bool|string
     {
         if (!$this->entityName || !is_string($this->entityName)) {
             return false;

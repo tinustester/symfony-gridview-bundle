@@ -14,91 +14,91 @@ class Gridview
     /**
      * @var array List of html attributes that will be applied to grid container.
      */
-    protected $containerOptions = ['class' => 'grid-view'];
+    protected array $containerOptions = ['class' => 'grid-view'];
 
     /**
      * @var array List of html attributes that will be applied to grid table.
      */
-    protected $tableOptions = ['class' => 'table table-bordered table-striped'];
+    protected array $tableOptions = ['class' => 'table table-bordered table-striped'];
 
     /**
      * @var string Grid table caption.
      */
-    protected $tableCaption;
+    protected string $tableCaption;
 
     /**
      * @var bool Whether the table header row will be shown.
      */
-    protected $showHeader = true;
+    protected bool $showHeader = true;
 
     /**
      * @var array List of html attributes that will be applied to grid table
      * header row.
      */
-    protected $headerRowOptions = [];
+    protected array $headerRowOptions = [];
 
     /**
      * @var array Options for grid table rows.
      */
-    protected $rowOptions = [];
+    protected array $rowOptions = [];
 
     /**
      * @var array List of html attributes that will be applied row that contains
      * filters.
      */
-    public $filterRowOptions = ['class' => 'filters'];
+    public array $filterRowOptions = ['class' => 'filters'];
 
     /**
      * @var string Value that will be used for empty table cell.
      */
-    protected $emptyCell = '&nbsp;';
+    protected string $emptyCell = '&nbsp;';
 
     /**
      * @var array
      */
-    protected $columns = [];
+    protected array $columns = [];
 
     /**
      * @var object|null Instance of target entity that will be used for creating
      * filter fields.
      */
-    protected $filterEntity;
+    protected ?object $filterEntity;
 
     /**
      * @var string Target url which will accept filter data. Current route will
      * be used by default.
      */
-    protected $filterUrl;
+    protected string $filterUrl = '';
 
     /**
      * @var string
      */
-    protected $gridIdPrefix = 'grid_';
+    protected string $gridIdPrefix = 'grid_';
 
     /**
      * @var string Current unique grid id.
      */
-    protected $gridId;
+    protected string $gridId;
 
     /**
      * @var int Unique grid id
      */
-    protected static $gridCounter = 0;
+    protected static int $gridCounter = 0;
 
     /**
      * @var QueryDataSource
      */
-    protected $dataSource;
+    protected QueryDataSource $dataSource;
 
     /**
      * @var FormBuilder
      */
-    protected $formBuilder;
+    protected FormBuilder $formBuilder;
 
     /**
      * @var Html
      */
-    protected $html;
+    protected Html $html;
 
     /**
      * Get grid id. If value was not set yet method generates new id based on
@@ -106,9 +106,9 @@ class Gridview
      *
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
-        if ($this->gridId === null) {
+        if (!isset($this->gridId)) {
             $this->gridId = $this->gridIdPrefix . static::$gridCounter++;
         }
 
@@ -120,7 +120,7 @@ class Gridview
      *
      * @return $this
      */
-    public function addColumn(BaseColumn $column)
+    public function addColumn(BaseColumn $column): static
     {
         $this->columns[] = $column;
 
@@ -132,15 +132,10 @@ class Gridview
      *
      * @return string
      */
-    public function renderGrid()
+    public function renderGrid(): string
     {
-        if (!isset($this->containerOptions['id'])) {
-            $this->containerOptions['id'] = $this->getId();
-        }
-
-        $gridContainerOptions = $this->html->prepareTagAttributes(
-            $this->containerOptions
-        );
+        $this->containerOptions['id'] = $this->containerOptions['id'] ?? $this->getId();
+        $gridContainerOptions = $this->html->prepareTagAttributes($this->containerOptions);
 
         return '<div ' . $gridContainerOptions . '>' . $this->renderTable() . '</div>';
     }
@@ -150,16 +145,16 @@ class Gridview
      *
      * @return string
      */
-    protected function renderTable()
+    protected function renderTable(): string
     {
         $tableOptions = $this->html->prepareTagAttributes($this->tableOptions);
 
-        $tableHtml = '<table ' . $tableOptions . '>' . $this->renderCaption()
-            . $this->renderTableHeader();
-
+        $tableHtml = '<table ' . $tableOptions . '>';
+        $tableHtml .= $this->renderCaption();
+        $tableHtml .= $this->renderTableHeader();
         $tableHtml .= $this->renderTableFilter();
-
-        $tableHtml .= $this->renderTableBody() . '</table>';
+        $tableHtml .= $this->renderTableBody();
+        $tableHtml .= '</table>';
 
         return $tableHtml;
     }
@@ -168,8 +163,9 @@ class Gridview
      * Renders table body.
      *
      * @return string
+     * @throws Exception\PaginationException
      */
-    protected function renderTableBody()
+    protected function renderTableBody(): string
     {
         $tableBody = '<tbody>';
 
@@ -189,13 +185,9 @@ class Gridview
      *
      * @return string
      */
-    protected function renderCaption()
+    protected function renderCaption(): string
     {
-        if ($this->tableCaption) {
-            return '<caption>' . $this->tableCaption . '</caption>';
-        }
-
-        return '';
+        return $this->tableCaption ? '<caption>' . $this->tableCaption . '</caption>' : '';
     }
 
     /**
@@ -203,14 +195,13 @@ class Gridview
      *
      * @return string
      */
-    public function renderTableHeader()
+    public function renderTableHeader(): string
     {
         if (!$this->showHeader) {
             return '';
         }
 
-        $tableHeader = '<thead><tr '
-            . $this->html->prepareTagAttributes($this->headerRowOptions) . ' >';
+        $tableHeader = '<thead><tr ' . $this->html->prepareTagAttributes($this->headerRowOptions) . ' >';
 
         /** @var BaseColumn $column */
         foreach ($this->columns as $column) {
@@ -225,7 +216,7 @@ class Gridview
     /**
      * @return string
      */
-    public function renderTableFilter()
+    public function renderTableFilter(): string
     {
         if (!$this->filterEntity) {
             return '';
@@ -233,10 +224,7 @@ class Gridview
 
         $this->filterRowOptions['id'] = $this->getId() . '_filters';
 
-        $tableHeader = '<tr ' . $this->html->prepareTagAttributes(
-                $this->filterRowOptions
-            ) . '>';
-
+        $tableHeader = '<tr ' . $this->html->prepareTagAttributes($this->filterRowOptions) . '>';
         $tableHeader .= '{{ form_start(' . $this->getId() . ') }}';
 
         /** @var BaseColumn $column */
@@ -245,7 +233,6 @@ class Gridview
         }
 
         $tableHeader .= '{{ form_end(' . $this->getId() . ') }}';
-
         $tableHeader .= "</tr>";
 
         return $tableHeader;
@@ -259,10 +246,9 @@ class Gridview
      *
      * @return string
      */
-    public function renderTableRow($entity, $index)
+    public function renderTableRow($entity, $index): string
     {
-        $tableRaw = '<tr ' . $this->html->prepareTagAttributes($this->rowOptions)
-            . ' >';
+        $tableRaw = '<tr ' . $this->html->prepareTagAttributes($this->rowOptions) . ' >';
 
         /** @var BaseColumn $column */
         foreach ($this->columns as $column) {
@@ -286,7 +272,7 @@ class Gridview
      * @return $this
      * @throws GridException
      */
-    public function setTableCaption($tableCaption)
+    public function setTableCaption(string $tableCaption): static
     {
         if (!is_string($tableCaption)) {
             throw new GridException(
@@ -305,7 +291,7 @@ class Gridview
      *
      * @return $this
      */
-    public function setRowOptions(array $rowOptions)
+    public function setRowOptions(array $rowOptions): static
     {
         $this->rowOptions = $rowOptions;
 
@@ -317,9 +303,9 @@ class Gridview
      *
      * @return $this
      */
-    public function setShowHeader($showHeader)
+    public function setShowHeader(bool $showHeader): static
     {
-        $this->showHeader = (bool)$showHeader;
+        $this->showHeader = $showHeader;
 
         return $this;
     }
@@ -329,7 +315,7 @@ class Gridview
      *
      * @return $this
      */
-    public function setTableOptions(array $tableOptions)
+    public function setTableOptions(array $tableOptions): static
     {
         $this->tableOptions = array_merge($this->tableOptions, $tableOptions);
 
@@ -339,7 +325,7 @@ class Gridview
     /**
      * @return QueryDataSource
      */
-    public function getDataSource()
+    public function getDataSource(): QueryDataSource
     {
         return $this->dataSource;
     }
@@ -349,7 +335,7 @@ class Gridview
      *
      * @return $this
      */
-    public function setFormBuilder(FormBuilderInterface $formBuilder)
+    public function setFormBuilder(FormBuilderInterface $formBuilder): static
     {
         $this->formBuilder = $formBuilder;
 
@@ -359,7 +345,7 @@ class Gridview
     /**
      * @return FormBuilder
      */
-    public function getFormBuilder()
+    public function getFormBuilder(): FormBuilder
     {
         return $this->formBuilder;
     }
@@ -367,7 +353,7 @@ class Gridview
     /**
      * @return string
      */
-    public function getEmptyCell()
+    public function getEmptyCell(): string
     {
         return $this->emptyCell;
     }
@@ -375,7 +361,7 @@ class Gridview
     /**
      * @return array
      */
-    public function getColumns()
+    public function getColumns(): array
     {
         return $this->columns;
     }
@@ -385,7 +371,7 @@ class Gridview
      *
      * @return $this
      */
-    public function setDataSource(BaseDataSource $dataSource)
+    public function setDataSource(BaseDataSource $dataSource): static
     {
         $this->dataSource = $dataSource;
 
@@ -395,9 +381,10 @@ class Gridview
     /**
      * @param object $filterEntity
      *
+     * @return Gridview
      * @throws GridException
      */
-    public function setFilterEntity($filterEntity)
+    public function setFilterEntity(object $filterEntity): static
     {
         if (!is_object($filterEntity)) {
             throw new GridException(
@@ -407,12 +394,14 @@ class Gridview
         }
 
         $this->filterEntity = $filterEntity;
+
+        return $this;
     }
 
     /**
-     * @return object
+     * @return object|null
      */
-    public function getFilterEntity()
+    public function getFilterEntity(): ?object
     {
         return $this->filterEntity;
     }
@@ -422,7 +411,7 @@ class Gridview
      *
      * @return $this
      */
-    public function setContainerOptions(array $containerOptions)
+    public function setContainerOptions(array $containerOptions): static
     {
         $this->containerOptions = array_merge(
             $this->containerOptions,
@@ -435,7 +424,7 @@ class Gridview
     /**
      * @return string
      */
-    public function getFilterUrl()
+    public function getFilterUrl(): string
     {
         return $this->filterUrl;
     }
@@ -444,17 +433,9 @@ class Gridview
      * @param string $filterUrl
      *
      * @return $this
-     * @throws GridException
      */
-    public function setFilterUrl($filterUrl)
+    public function setFilterUrl(string $filterUrl): static
     {
-        if (!is_string($filterUrl)) {
-            throw new GridException(
-                'The expected type of the ' . self::class
-                . ' filter url is string. ' . gettype($filterUrl) . ' given.'
-            );
-        }
-
         $this->filterUrl = $filterUrl;
 
         return $this;
@@ -465,7 +446,7 @@ class Gridview
      *
      * @return $this
      */
-    public function setHtml(Html $html)
+    public function setHtml(Html $html): static
     {
         $this->html = $html;
 

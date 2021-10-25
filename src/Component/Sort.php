@@ -2,6 +2,7 @@
 
 namespace Tinustester\Bundle\GridviewBundle\Component;
 
+use Exception;
 use Tinustester\Bundle\GridviewBundle\Helper\Html;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Router;
@@ -11,14 +12,16 @@ use Tinustester\Bundle\GridviewBundle\Exception\SortException;
 
 class Sort
 {
-    const ASC = 'asc';
+    /** @var string  */
+    public const ASC = 'asc';
 
-    const DESC = 'desc';
+    /** @var string  */
+    public const DESC = 'desc';
 
     /**
      * @var bool Whether the sorting will be applied for multiple attributes.
      */
-    protected $enableMultiSort = false;
+    protected bool $enableMultiSort = false;
 
     /**
      * @var array Attributes that will be sorted.
@@ -26,9 +29,9 @@ class Sort
      * [
      *     'status',
      *     'name' => [
-     *         'asc' => ['first_name' => Sort:ASC, 'last_name' => Sort:ASC],
-     *         'desc' => ['first_name' => Sort:DESC, 'last_name' => Sort:DESC],
-     *         'default' => SORT_DESC,
+     *          Sort:ASC => ['first_name' => Sort:ASC, 'last_name' => Sort:ASC],
+     *          Sort:DESC => ['first_name' => Sort:DESC, 'last_name' => Sort:DESC],
+     *         'default' => Sort:DESC,
      *         'label' => 'Name',
      *     ],
      * ]
@@ -44,18 +47,18 @@ class Sort
      * All properties are optional. If 'asc' or 'desc' key was not defined
      * then default values will be used.
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * @var array|null Sort type of each attribute.
      */
-    protected $attributeOrders;
+    protected ?array $attributeOrders;
 
     /**
      * @var string The name of the parameter that will contain the sorting data
      * in the query string.
      */
-    protected $sortParam = 'sort';
+    protected string $sortParam = 'sort';
 
     /**
      * @var array Default sort params. This params will be used if sort params
@@ -65,27 +68,27 @@ class Sort
      *     'status' => Sort:DESC
      * ]
      */
-    protected $defaultOrder = [];
+    protected array $defaultOrder = [];
 
     /**
      * @var string Symbol that uses to separate sort attributes in query string.
      */
-    protected $separator = ',';
+    protected string $separator = ',';
 
     /**
      * @var Request
      */
-    protected $request;
+    protected Request $request;
 
     /**
      * @var Router
      */
-    protected $router;
+    protected Router $router;
 
     /**
      * @var Html
      */
-    protected $html;
+    protected Html $html;
 
     /**
      * Sort constructor.
@@ -96,7 +99,6 @@ class Sort
     public function __construct(RequestStack $requestStack, Router $router)
     {
         $this->request = $requestStack->getCurrentRequest();
-
         $this->router = $router;
     }
 
@@ -107,10 +109,9 @@ class Sort
      *
      * @return $this
      */
-    public function setAttributes(array $sortAttributes)
+    public function setAttributes(array $sortAttributes): static
     {
         $this->attributes = $sortAttributes;
-
         $this->prepareSortAttributes();
 
         return $this;
@@ -124,7 +125,7 @@ class Sort
      *
      * @return array
      */
-    protected function prepareSortAttributes()
+    protected function prepareSortAttributes(): array
     {
         $preparedAttributes = [];
 
@@ -158,7 +159,7 @@ class Sort
      *
      * @return array
      */
-    public function fetchOrders()
+    public function fetchOrders(): array
     {
         $attributeOrders = $this->fetchAttributesOrder();
 
@@ -167,7 +168,6 @@ class Sort
         foreach ($attributeOrders as $attribute => $sortType) {
 
             $attributeSortData = $this->attributes[$attribute];
-
             $relatedAttributes = $attributeSortData[$sortType];
 
             if (is_array($relatedAttributes)) {
@@ -190,7 +190,7 @@ class Sort
      *
      * @return array
      */
-    public function fetchAttributesOrder()
+    public function fetchAttributesOrder(): array
     {
         $sortQueryParams = $this->parseSortQueryParams();
 
@@ -200,7 +200,6 @@ class Sort
 
             if (!strncmp($attribute, '-', 1)) {
                 $sortType = self::DESC;
-
                 $attribute = substr($attribute, 1);
             }
 
@@ -228,7 +227,7 @@ class Sort
      *
      * @return array
      */
-    protected function parseSortQueryParams()
+    protected function parseSortQueryParams(): array
     {
         $queryParameters = $this->request->query->all();
 
@@ -243,8 +242,10 @@ class Sort
      * Set attribute orders.
      *
      * @param array $attributeOrders
+     *
+     * @return Sort
      */
-    public function setAttributeOrders(array $attributeOrders)
+    public function setAttributeOrders(array $attributeOrders): static
     {
         $this->attributeOrders = [];
 
@@ -260,6 +261,8 @@ class Sort
                 break;
             }
         }
+
+        return $this;
     }
 
     /**
@@ -267,9 +270,9 @@ class Sort
      *
      * @param string $attribute
      *
-     * @return array
+     * @return string|null
      */
-    public function getAttributeOrder($attribute)
+    public function getAttributeOrder($attribute): ?string
     {
         if (!is_string($attribute)) {
             return null;
@@ -298,6 +301,7 @@ class Sort
         $sortType = $this->getAttributeOrder($attribute);
 
         if ($sortType) {
+//            $options['class'] = implode(" ", [$options['class'] ?? null, $sortType]);
             if (isset($options['class'])) {
                 $options['class'] .= ' '.$sortType;
             } else {
@@ -311,16 +315,10 @@ class Sort
             $label = $options['label'];
             unset($options['label']);
         } else {
-            if (isset($this->attributes[$attribute]['label'])) {
-                $label = $this->attributes[$attribute]['label'];
-            } else {
-                $label = TextFormat::camelCaseToWord($attribute);
-            }
+            $label = $this->attributes[$attribute]['label'] ?? TextFormat::camelCaseToWord($attribute);
         }
 
-        return '<a '.$this->html->prepareTagAttributes(
-                $options
-            ).' href="'.$this->createUrl($attribute).'">'.$label.'</a>';
+        return '<a '.$this->html->prepareTagAttributes($options) . ' href="'.$this->createUrl($attribute).'">'.$label.'</a>';
     }
 
     /**
@@ -330,8 +328,9 @@ class Sort
      * @param bool $absolute
      *
      * @return string
+     * @throws Exception
      */
-    public function createUrl($attribute, $absolute = true)
+    public function createUrl(string $attribute, bool $absolute = true): string
     {
         $parameters = $this->request->query->all();
 
@@ -350,29 +349,23 @@ class Sort
      * @return array
      * @throws SortException
      */
-    protected function prepareQuerySortParams($attribute)
+    protected function prepareQuerySortParams(string $attribute): array
     {
         if (!isset($this->attributes[$attribute])) {
             throw new SortException("Unknown sort attribute name: ".$attribute);
         }
 
         $sortData = $this->attributes[$attribute];
-
         $sortOrder = $this->fetchAttributesOrder();
 
         if (isset($sortOrder[$attribute])) {
-            $sortType = $sortOrder[$attribute] === self::DESC
-                ? self::ASC : self::DESC;
-
+            $sortType = $sortOrder[$attribute] === self::DESC ? self::ASC : self::DESC;
             unset($sortOrder[$attribute]);
         } else {
-            $sortType = isset($sortData['default'])
-                ? $sortData['default'] : self::ASC;
+            $sortType = $sortData['default'] ?? self::ASC;
         }
 
-        return $this->enableMultiSort
-            ? array_merge([$attribute => $sortType], $sortOrder)
-            : [$attribute => $sortType];
+        return $this->enableMultiSort ? array_merge([$attribute => $sortType], $sortOrder) : [$attribute => $sortType];
     }
 
     /**
@@ -381,17 +374,15 @@ class Sort
      * @param string $attribute
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
-    public function createSortParam($attribute)
+    public function createSortParam(string $attribute): string
     {
         $sortOrder = $this->prepareQuerySortParams($attribute);
-
         $sortList = [];
 
         foreach ($sortOrder as $attribute => $sortType) {
-            $sortList[] = $sortType === self::DESC
-                ? '-'.$attribute : $attribute;
+            $sortList[] = $sortType === self::DESC ? '-'.$attribute : $attribute;
         }
 
         return implode($this->separator, $sortList);
@@ -404,7 +395,7 @@ class Sort
      *
      * @return bool
      */
-    public function hasAttribute($attribute)
+    public function hasAttribute(string $attribute): bool
     {
         return isset($this->attributes[$attribute]);
     }
@@ -412,7 +403,7 @@ class Sort
     /**
      * @return array
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -422,10 +413,9 @@ class Sort
      *
      * @return $this
      */
-    public function setEnableMultiSort($enableMultiSort)
+    public function setEnableMultiSort(bool $enableMultiSort): static
     {
-        $this->enableMultiSort = (bool)$enableMultiSort;
-
+        $this->enableMultiSort = $enableMultiSort;
         return $this;
     }
 
@@ -435,18 +425,9 @@ class Sort
      * @return $this
      * @throws SortException
      */
-    public function setSortParam($sortParam)
+    public function setSortParam(string $sortParam): static
     {
-        if (!is_string($sortParam)) {
-            throw new SortException(
-                'The expected type of the '.Sort::class
-                .' sort param name is a string. '.gettype($sortParam)
-                .' given.'
-            );
-        }
-
         $this->sortParam = $sortParam;
-
         return $this;
     }
 
@@ -454,20 +435,10 @@ class Sort
      * @param string $separator
      *
      * @return $this
-     * @throws SortException
      */
-    public function setSeparator($separator)
+    public function setSeparator(string $separator): static
     {
-        if (!is_string($separator)) {
-            throw new SortException(
-                'The expected type of the '.Sort::class
-                .' separator is a string. '.gettype($separator)
-                .' given.'
-            );
-        }
-
         $this->separator = $separator;
-
         return $this;
     }
 
@@ -476,10 +447,9 @@ class Sort
      *
      * @return $this
      */
-    public function setDefaultOrder(array $defaultOrder)
+    public function setDefaultOrder(array $defaultOrder): static
     {
         $this->defaultOrder = $defaultOrder;
-
         return $this;
     }
 
@@ -488,10 +458,9 @@ class Sort
      *
      * @return $this
      */
-    public function setHtml(Html $html)
+    public function setHtml(Html $html): static
     {
         $this->html = $html;
-
         return $this;
     }
 }

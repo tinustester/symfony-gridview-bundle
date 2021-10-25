@@ -12,17 +12,17 @@ abstract class BaseColumn
      * @var array List of options and attributes that will be applied to header
      * row
      */
-    protected $headerOptions = [];
+    protected array $headerOptions = [];
 
     /**
      * @var bool Whether the header will be encoded
      */
-    protected $encodeLabel = false;
+    protected bool $encodeLabel = false;
 
     /**
      * @var string Column header label
      */
-    protected $label;
+    protected string $label;
 
     /**
      * @var string|callable Column cell content. This parameter can contain
@@ -47,9 +47,9 @@ abstract class BaseColumn
     protected $contentOptions = [];
 
     /**
-     * @var array List of option that will be applied to filter cell
+     * @var array List of options that will be applied to filter cell
      */
-    protected $filterOptions = [];
+    protected array $filterOptions = [];
 
     /**
      * @var bool|callable Whether the column should be visible. Parameter can
@@ -65,27 +65,27 @@ abstract class BaseColumn
     /**
      * @var ColumnFormat
      */
-    protected $columnFormat;
+    protected ColumnFormat $columnFormat;
 
     /**
      * @var string Default format of column cell data
      */
-    protected $format = ColumnFormat::RAW_FORMAT;
+    protected string $format = ColumnFormat::RAW_FORMAT;
 
     /**
      * @var GridView
      */
-    protected $gridView;
+    protected Gridview $gridView;
 
     /**
      * @var bool Whether the column is sortable
      */
-    protected $sortable = true;
+    protected bool $sortable = true;
 
     /**
      * @var Html
      */
-    protected $html;
+    protected Html $html;
 
     /**
      * Column constructor.
@@ -100,7 +100,7 @@ abstract class BaseColumn
     /**
      * @return string
      */
-    public function getHeaderCellContent()
+    public function getHeaderCellContent(): string
     {
         return $this->label;
     }
@@ -110,7 +110,7 @@ abstract class BaseColumn
      *
      * @return string
      */
-    public function renderHeaderCellContent()
+    public function renderHeaderCellContent(): string
     {
         $headerCellContent = $this->getHeaderCellContent();
 
@@ -129,7 +129,7 @@ abstract class BaseColumn
     /**
      * @return bool
      */
-    public function initColumnFilter()
+    public function initColumnFilter(): bool
     {
         return false;
     }
@@ -139,7 +139,7 @@ abstract class BaseColumn
      *
      * @return string
      */
-    public function renderFilterCellContent()
+    public function renderFilterCellContent(): string
     {
         return '<td '.$this->html->prepareTagAttributes(
                 $this->filterOptions
@@ -157,7 +157,7 @@ abstract class BaseColumn
      */
     abstract public function renderCellContent(
         $entityInstance,
-        $index,
+        int $index,
         $emptyCellContent = null
     );
 
@@ -183,7 +183,7 @@ abstract class BaseColumn
      * @return $this
      * @throws ColumnException
      */
-    public function setContentOptions($contentOptions)
+    public function setContentOptions($contentOptions): static
     {
         if (!is_array($contentOptions) && !is_callable($contentOptions)) {
             throw new ColumnException(
@@ -196,10 +196,7 @@ abstract class BaseColumn
             $contentOptions = call_user_func($contentOptions);
 
             if (!is_array($contentOptions)) {
-                throw new ColumnException(
-                    'Grid column content options '
-                    .'function should return an array.'
-                );
+                throw new ColumnException('Grid column content options function should return an array.');
             }
         }
 
@@ -211,7 +208,7 @@ abstract class BaseColumn
     /**
      * @return boolean
      */
-    public function isVisible()
+    public function isVisible(): bool
     {
         return $this->visible;
     }
@@ -221,7 +218,7 @@ abstract class BaseColumn
      *
      * @return $this
      */
-    public function setVisible($enabled)
+    public function setVisible($enabled): static
     {
         if ($enabled instanceof \Closure) {
             $this->visible = call_user_func($enabled);
@@ -235,7 +232,7 @@ abstract class BaseColumn
     /**
      * @param string $format
      */
-    public function setFormat($format)
+    public function setFormat(string $format)
     {
         $this->format = $format;
     }
@@ -253,9 +250,9 @@ abstract class BaseColumn
      *
      * @return $this
      */
-    public function setSortable($sortable)
+    public function setSortable(bool $sortable): static
     {
-        $this->sortable = (bool)$sortable;
+        $this->sortable = $sortable;
 
         return $this;
     }
@@ -265,7 +262,7 @@ abstract class BaseColumn
      *
      * @return $this
      */
-    public function setHtml(Html $html)
+    public function setHtml(Html $html): static
     {
         $this->html = $html;
 

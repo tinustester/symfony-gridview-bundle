@@ -2,6 +2,7 @@
 
 namespace Tinustester\Bundle\GridviewBundle;
 
+use Exception;
 use Tinustester\Bundle\GridviewBundle\Column\BaseColumn;
 use Tinustester\Bundle\GridviewBundle\Column\Column;
 use Tinustester\Bundle\GridviewBundle\Exception\GridException;
@@ -15,17 +16,17 @@ class GridviewFactory
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var GridView
      */
-    protected $gridView;
+    protected Gridview $gridView;
 
     /**
      * @var string
      */
-    protected $defaultColumnService = 'tt_grid.column';
+    protected string $defaultColumnService = 'tt_grid.column';
 
     /**
      * GridFactory constructor.
@@ -45,9 +46,9 @@ class GridviewFactory
      * @param array $columns
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function initColumns(array $columns)
+    protected function initColumns(array $columns): static
     {
         foreach ($columns as $columnData) {
 
@@ -66,7 +67,7 @@ class GridviewFactory
                 $methodName = 'set'.ucfirst($paramName);
 
                 if (!method_exists($column, $methodName)) {
-                    throw new \Exception('Column has no property '.$paramName);
+                    throw new Exception('Column has no property '.$paramName);
                 }
 
                 $column->$methodName($paramValue);
@@ -74,7 +75,6 @@ class GridviewFactory
 
             if ($column->isVisible()) {
                 $column->setGridView($this->gridView);
-
                 $this->gridView->addColumn($column);
             }
         }
@@ -87,7 +87,7 @@ class GridviewFactory
      *
      * @return $this
      */
-    protected function setGridParameters(array $gridViewData)
+    protected function setGridParameters(array $gridViewData): static
     {
         foreach ($gridViewData as $parameterName => $value) {
 
@@ -110,7 +110,7 @@ class GridviewFactory
      * @return $this
      * @throws GridException
      */
-    protected function setDataSource(array $gridViewData)
+    protected function setDataSource(array $gridViewData): static
     {
         if (empty($gridViewData['dataSource'])) {
             throw new GridException(
@@ -136,7 +136,7 @@ class GridviewFactory
      * @return $this
      * @throws GridException
      */
-    protected function setFormBuilder()
+    protected function setFormBuilder(): static
     {
         $entityInstance = $this->gridView->getFilterEntity();
 
@@ -189,8 +189,9 @@ class GridviewFactory
      * @param array $gridViewData
      *
      * @return GridView
+     * @throws Exception
      */
-    public function prepareGridView(array $gridViewData)
+    public function prepareGridView(array $gridViewData): GridView
     {
         $this->setGridParameters($gridViewData);
 
@@ -210,19 +211,15 @@ class GridviewFactory
      *
      * @return array
      */
-    protected function prepareColumns(array $gridViewData)
+    protected function prepareColumns(array $gridViewData): array
     {
         $columns = [];
-
-        //$columns[] = ['service' => 'tt_grid.counter_column'];
 
         if (
             !empty($gridViewData['columns'])
             && is_array($gridViewData['columns'])
         ) {
-            $columns = array_merge($columns, $gridViewData['columns']);
-
-            return $columns;
+            return array_merge($columns, $gridViewData['columns']);
         }
 
         $entityAttributes = $gridViewData['dataSource']->fetchEntityFields();

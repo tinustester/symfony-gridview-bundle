@@ -6,16 +6,19 @@ use Tinustester\Bundle\GridviewBundle\Exception\HtmlException;
 
 class Html
 {
-    const CLASS_ATTR = 'class';
+    /** @var string  */
+    public const CLASS_ATTR = 'class';
 
-    const STYLE_ATTR = 'style';
+    /** @var string  */
+    public const STYLE_ATTR = 'style';
 
-    const DATA_ATTR = 'data';
+    /** @var string  */
+    public const DATA_ATTR = 'data';
 
     /**
      * @var array List of [data] type attributes
      */
-    public $dataAttributes = ['data', 'data-ng', 'ng'];
+    public array $dataAttributes = ['data', 'data-ng', 'ng'];
 
     /**
      * Converts list of tag attributes from array to encoded string
@@ -25,7 +28,7 @@ class Html
      *
      * @return string
      */
-    public function prepareTagAttributes(array $attributes)
+    public function prepareTagAttributes(array $attributes): string
     {
         $preparedHtml = '';
 
@@ -47,7 +50,7 @@ class Html
      *
      * @return mixed|string
      */
-    protected function prepareTagAttribute($attributeName, $attributeData)
+    protected function prepareTagAttribute(string $attributeName, $attributeData)
     {
         if (is_bool($attributeData)) {
             return $attributeName . ' ';
@@ -61,8 +64,7 @@ class Html
             $prepareMethod = 'prepare' . ucfirst($attributeType) . 'Attribute';
 
             if (!method_exists($this, $prepareMethod)) {
-                $preparedAttribute .= " $attributeName='"
-                    . $this->jsonEncode($attributeData) . "' ";
+                $preparedAttribute .= " $attributeName='" . $this->jsonEncode($attributeData) . "' ";
 
                 return $preparedAttribute;
             }
@@ -84,7 +86,7 @@ class Html
      *
      * @return bool|string
      */
-    protected function guessAttributeType($attributeName)
+    protected function guessAttributeType(string $attributeName): bool|string
     {
         if (in_array($attributeName, $this->dataAttributes)) {
             return self::DATA_ATTR;
@@ -106,23 +108,9 @@ class Html
      * @return string
      * @throws HtmlException
      */
-    protected function prepareClassAttribute(
-        $attributeName,
-        array $attributeData
-    ) {
-        $preparedAttribute = '';
-
-        if (!is_string($attributeName)) {
-            throw new HtmlException(
-                'The expected type of the "attributeName" is string. '
-                . gettype($attributeName) . ' given.'
-            );
-        }
-
-        $preparedAttribute .= "$attributeName="
-            . $this->jsonEncode(implode(' ', $attributeData));
-
-        return $preparedAttribute;
+    protected function prepareClassAttribute(string $attributeName, array $attributeData): string
+    {
+        return $attributeName . "=" . $this->jsonEncode(implode(' ', $attributeData));
     }
 
     /**
@@ -134,17 +122,8 @@ class Html
      * @return string
      * @throws HtmlException
      */
-    protected function prepareDataAttribute(
-        $attributeName,
-        array $attributeData
-    ) {
-        if (!is_string($attributeName)) {
-            throw new HtmlException(
-                'The expected type of the "attributeName" is string. '
-                . gettype($attributeName) . ' given.'
-            );
-        }
-
+    protected function prepareDataAttribute(string $attributeName, array $attributeData): string
+    {
         $preparedAttribute = '';
 
         foreach ($attributeData as $dataName => $dataValue) {
@@ -155,15 +134,8 @@ class Html
                 );
             }
 
-            $preparedAttribute .= " $attributeName-$dataName=";
-
-            if (is_array($dataValue)) {
-                $preparedAttribute .= json_encode($dataValue);
-
-                continue;
-            }
-
-            $preparedAttribute .= $this->jsonEncode($dataValue);
+            $preparedAttribute .= " " . $attributeName . "-" . $dataName . "=";
+            $preparedAttribute .= is_array($dataValue) ? json_encode($dataValue) : $this->jsonEncode($dataValue);
         }
 
         return $preparedAttribute;
@@ -178,19 +150,9 @@ class Html
      * @return string
      * @throws HtmlException
      */
-    protected function prepareStyleAttribute(
-        $attributeName,
-        array $attributeData
-    ) {
-        if (!is_string($attributeName)) {
-            throw new HtmlException(
-                'The expected type of the "attributeName" is string. '
-                . gettype($attributeName) . ' given.'
-            );
-        }
-
-        $preparedAttribute = " $attributeName=";
-
+    protected function prepareStyleAttribute(string $attributeName, array $attributeData): string
+    {
+        $preparedAttribute = " " . $attributeName . "=";
         $styles = [];
 
         foreach ($attributeData as $styleName => $styleValue) {
@@ -201,7 +163,7 @@ class Html
                 );
             }
 
-            $styles[] = "$styleName: $styleValue";
+            $styles[] = $styleName . ":" . $styleValue;
         }
 
         $preparedAttribute .= $this->jsonEncode(implode('; ', $styles));
@@ -216,7 +178,7 @@ class Html
      *
      * @return string
      */
-    public function jsonEncode($data)
+    public function jsonEncode($data): string
     {
         return json_encode(
             $data,

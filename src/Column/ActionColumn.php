@@ -122,12 +122,12 @@ class ActionColumn extends BaseColumn
      * Check if specified button should be hidden.
      *
      * @param string $buttonName
-     * @param string $buttonUrl
+     * @param string|null $buttonUrl
      * @param object $entityInstance
      *
      * @return bool
      */
-    protected function isButtonHidden(string $buttonName, string $buttonUrl, object $entityInstance): bool
+    protected function isButtonHidden(string $buttonName, ?string $buttonUrl, object $entityInstance): bool
     {
         if (empty($this->hiddenButtons[$buttonName])) {
             return false;
@@ -183,18 +183,38 @@ class ActionColumn extends BaseColumn
 
         $buttons = [];
 
-        foreach ($this->buttons as $buttonName => $buttonUrl) {
+        foreach ($this->buttons as $buttonName => $buttonOptions) {
 
             $defaultButtonUrl = $this->createDefaultButtonUrl(
                 $buttonName,
                 $entityInstance
             );
 
-            $this->checkButtonUrl($buttonUrl);
+            $this->checkButtonUrl($buttonOptions);
+
+            $buttonContent = null;
+            $buttonUrl = $buttonOptions;
+
+            if(is_array($buttonOptions)){
+                $buttonUrl = '';
+                if(isset($buttonOptions['url'])) {
+                    $this->checkButtonUrl($buttonUrl);
+                    $buttonUrl = $buttonOptions['url'];
+                }
+                if(isset($buttonOptions['content'])) {
+                    $buttonContent = $buttonOptions['content'];
+                    if(is_callable($buttonContent)) {
+                        $buttonContent = call_user_func_array(
+                            $buttonContent,
+                            [$entityInstance, $buttonUrl, $index]
+                        );
+                    }
+                }
+            }
 
             if (is_callable($buttonUrl)) {
                 $buttonUrl = call_user_func_array(
-                    $buttonUrl,
+                    $buttonOptions,
                     [$entityInstance, $defaultButtonUrl, $index]
                 );
             }
@@ -209,7 +229,7 @@ class ActionColumn extends BaseColumn
                 continue;
             }
 
-            $buttons[] = $this->renderButton($buttonName, $buttonUrl);
+            $buttons[] = $buttonContent ?? $this->renderButton($buttonName, $buttonUrl);
         }
 
         return $buttons;
@@ -225,7 +245,7 @@ class ActionColumn extends BaseColumn
      */
     protected function checkButtonUrl($buttonUrlData): bool
     {
-        if (!is_callable($buttonUrlData) && !is_string($buttonUrlData)) {
+        if (!is_callable($buttonUrlData) && !is_string($buttonUrlData) && !is_array($buttonUrlData)) {
             throw new ActionColumnException(
                 'Action column button url can contain string value or callable. '
                 .gettype($buttonUrlData).' given.'

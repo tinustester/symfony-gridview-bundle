@@ -13,6 +13,15 @@ services:
       - '@tt_grid.column_format'
       - '@tt_grid.html'
 
+  tt_grid.action_column:
+    class:  Tinustester\Bundle\GridviewBundle\Column\ActionColumn
+    public: true
+    shared: false
+    arguments:
+      - '@tt_grid.column_format'
+      - '@tt_grid.html'
+      - '@request_stack'
+
   tt_grid.view:
     class: Tinustester\Bundle\GridviewBundle\Gridview
     shared: false

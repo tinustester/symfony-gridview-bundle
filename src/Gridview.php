@@ -101,6 +101,15 @@ class Gridview
     protected Html $html;
 
     /**
+     * Inject dependencies
+     *
+     * @param Html $html
+     */
+    public function __construct(Html $html){
+        $this->html = $html;
+    }
+
+    /**
      * Get grid id. If value was not set yet method generates new id based on
      * static counter so id will be unique for each new grid instance.
      *

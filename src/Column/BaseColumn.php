@@ -91,10 +91,12 @@ abstract class BaseColumn
      * Column constructor.
      *
      * @param ColumnFormat $columnFormat
+     * @param Html $html
      */
-    public function __construct(ColumnFormat $columnFormat)
+    public function __construct(ColumnFormat $columnFormat, Html $html)
     {
         $this->columnFormat = $columnFormat;
+        $this->html = $html;
     }
 
     /**

@@ -11,14 +11,13 @@ services:
     shared: false
     arguments:
       - '@tt_grid.column_format'
-    calls:
-      - setHtml: ['@tt_grid.html']
+      - '@tt_grid.html'
 
   tt_grid.view:
     class: Tinustester\Bundle\GridviewBundle\Gridview
     shared: false
-    calls:
-      - setHtml: ['@tt_grid.html']
+    arguments:
+      - '@tt_grid.html'
 
   tt_grid.pagination_view:
     class: Tinustester\Bundle\GridviewBundle\Component\PaginationView
@@ -26,8 +25,7 @@ services:
     arguments:
       - '@request_stack'
       - '@router'
-    calls:
-      - setHtml: ['@tt_grid.html']
+      - '@tt_grid.html'
 
   tt_grid.twig_extension:
     class: Tinustester\Bundle\GridviewBundle\Twig\GridExtension
@@ -55,15 +53,14 @@ services:
     arguments:
       - '@request_stack'
       - '@router'
-    calls:
-      - setHtml: ['@tt_grid.html']
+      - '@tt_grid.html'
 
   tt_grid.query_data_source:
     class: Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource
     shared: false
-    calls:
-      - setPagination: ['@tt_grid.pagination']
-      - setSort: ['@tt_grid.sort']
+    arguments:
+      - '@tt_grid.pagination'
+      - '@tt_grid.sort'
 
   tt_grid.grid_view_factory:
     class: Tinustester\Bundle\GridviewBundle\GridviewFactory
@@ -76,3 +73,6 @@ services:
 
   Tinustester\Bundle\GridviewBundle\Component\Sort:
     alias: 'tt_grid.sort'
+
+  Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource:
+    alias: 'tt_grid.query_data_source'

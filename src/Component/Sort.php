@@ -97,10 +97,11 @@ class Sort
      * @param RequestStack $requestStack
      * @param Router $router
      */
-    public function __construct(RequestStack $requestStack, Router $router)
+    public function __construct(RequestStack $requestStack, Router $router, Html $html)
     {
         $this->request = $requestStack->getCurrentRequest();
         $this->router = $router;
+        $this->html = $html;
     }
 
     /**

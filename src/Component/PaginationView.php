@@ -127,7 +127,7 @@ class PaginationView
      * @param RequestStack $request
      * @param Router $router
      */
-    public function __construct(RequestStack $request, Router $router)
+    public function __construct(RequestStack $request, Router $router, Html $html)
     {
         $currentRequest = $request->getCurrentRequest();
 
@@ -136,6 +136,7 @@ class PaginationView
         }
 
         $this->router = $router;
+        $this->html = $html;
     }
 
     /**

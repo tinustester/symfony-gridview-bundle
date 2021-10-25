@@ -4,6 +4,7 @@ namespace Tinustester\Bundle\GridviewBundle\DataSource;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Tinustester\Bundle\GridviewBundle\Component\Pagination;
 use Tinustester\Bundle\GridviewBundle\Component\Sort;
 use Tinustester\Bundle\GridviewBundle\Exception\DataSourceException;
 use Tinustester\Bundle\GridviewBundle\Exception\PaginationException;
@@ -24,6 +25,17 @@ class QueryDataSource extends BaseDataSource
      * @var ServiceEntityRepository
      */
     protected ServiceEntityRepository $entityRepository;
+
+    /**
+     * Inject dependencies
+     *
+     * @param Pagination $pagination
+     * @param Sort $sort
+     */
+    public function __construct(Pagination $pagination, Sort $sort){
+        $this->pagination = $pagination;
+        $this->sort = $sort;
+    }
 
     /**
      * @inheritdoc

@@ -20,9 +20,9 @@ abstract class BaseColumn
     protected bool $encodeLabel = false;
 
     /**
-     * @var string Column header label
+     * @var string|null Column header label
      */
-    protected string $label;
+    protected ?string $label = null;
 
     /**
      * @var string|callable Column cell content. This parameter can contain

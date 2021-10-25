@@ -401,11 +401,11 @@ class Sort
     /**
      * Check if attribute exists.
      *
-     * @param string $attribute
+     * @param string|null $attribute
      *
      * @return bool
      */
-    public function hasAttribute(string $attribute): bool
+    public function hasAttribute(?string $attribute): bool
     {
         return isset($this->attributes[$attribute]);
     }

@@ -3,6 +3,7 @@
 namespace Tinustester\Bundle\GridviewBundle\Component;
 
 use Exception;
+use Tinustester\Bundle\GridviewBundle\Gridview;
 use Tinustester\Bundle\GridviewBundle\Helper\Html;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Router;
@@ -292,16 +293,18 @@ class Sort
      * label was not defined attribute name will be used.
      *
      * @param string $attribute
+     * @param Gridview $gridview
      * @param array $options
      *
      * @return string
+     * @throws Exception
      */
-    public function createLink($attribute, array $options = [])
+    public function createLink(string $attribute, Gridview $gridview, array $options = []): string
     {
         $sortType = $this->getAttributeOrder($attribute);
 
         if ($sortType) {
-//            $options['class'] = implode(" ", [$options['class'] ?? null, $sortType]);
+            $options['class'] = implode(" ", [$options['class'] ?? null, $sortType]);
             if (isset($options['class'])) {
                 $options['class'] .= ' '.$sortType;
             } else {
@@ -318,21 +321,28 @@ class Sort
             $label = $this->attributes[$attribute]['label'] ?? TextFormat::camelCaseToWord($attribute);
         }
 
-        return '<a '.$this->html->prepareTagAttributes($options) . ' href="'.$this->createUrl($attribute).'">'.$label.'</a>';
+        return '<a '.$this->html->prepareTagAttributes($options) . ' href="'.$this->createUrl($attribute, $gridview).'">'.$label.'</a>';
     }
 
     /**
      * Creates url with sort params in query.
      *
      * @param string $attribute
+     * @param Gridview $gridview
      * @param bool $absolute
      *
      * @return string
      * @throws Exception
      */
-    public function createUrl(string $attribute, bool $absolute = true): string
+    public function createUrl(string $attribute, Gridview $gridview, bool $absolute = true): string
     {
         $parameters = $this->request->query->all();
+
+        // Reset paging param
+        $pageParamName = $gridview->getDataSource()?->getPagination()?->getPageParamName();
+        if($pageParamName && isset($parameters[$pageParamName])){
+            unset($parameters[$pageParamName]);
+        }
 
         $parameters[$this->sortParam] = $this->createSortParam($attribute);
 

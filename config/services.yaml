@@ -20,10 +20,26 @@ services:
     calls:
       - setHtml: ['@tt_grid.html']
 
+  tt_grid.pagination_view:
+    class: Tinustester\Bundle\GridviewBundle\Component\PaginationView
+    shared: false
+    arguments:
+      - '@request_stack'
+      - '@router'
+    calls:
+      - setHtml: ['@tt_grid.html']
+
   tt_grid.twig_extension:
     class: Tinustester\Bundle\GridviewBundle\Twig\GridExtension
     arguments:
       - '@twig'
+    tags:
+      - 'twig.extension'
+
+  tt_grid.pagination_extension:
+    class: Tinustester\Bundle\GridviewBundle\Twig\PaginationExtension
+    arguments:
+      - '@tt_grid.pagination_view'
     tags:
       - 'twig.extension'
 

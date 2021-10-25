@@ -179,7 +179,7 @@ class Pagination
      */
     public function getRoute(): string
     {
-        if (!$this->route) {
+        if (!isset($this->route)) {
             $this->setRoute($this->request->attributes->all()['_route']);
         }
 

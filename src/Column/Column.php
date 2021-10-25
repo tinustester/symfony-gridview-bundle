@@ -37,6 +37,7 @@ class Column extends BaseColumn
      *
      * @return string
      * @throws ColumnException
+     * @throws \Exception
      */
     public function getHeaderCellContent(): string
     {
@@ -55,7 +56,7 @@ class Column extends BaseColumn
                 ? $this->attributeName : null);
 
             if ($sortAttribute) {
-                return $sort->createLink($sortAttribute, ['label' => $label]);
+                return $sort->createLink($sortAttribute, $this->gridView, ['label' => $label]);
             }
         }
 

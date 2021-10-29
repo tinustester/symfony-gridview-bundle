@@ -1,15 +1,15 @@
 <?php
 
-namespace Tinustester\Bundle\GridviewBundle\DataSource;
+namespace Tinustester\Bundle\GridviewBundle\DataProvider;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Tinustester\Bundle\GridviewBundle\Component\Pagination;
 use Tinustester\Bundle\GridviewBundle\Component\Sort;
-use Tinustester\Bundle\GridviewBundle\Exception\DataSourceException;
+use Tinustester\Bundle\GridviewBundle\Exception\DataProviderException;
 use Tinustester\Bundle\GridviewBundle\Exception\PaginationException;
 
-class QueryDataSource extends BaseDataSource
+class QueryDataProvider extends BaseDataProvider
 {
     /**
      * @var string
@@ -62,7 +62,7 @@ class QueryDataSource extends BaseDataSource
      *
      * @return $this
      */
-    public function setDataSource(QueryBuilder $queryBuilder): static
+    public function setDataProvider(QueryBuilder $queryBuilder): static
     {
         $this->dataSource = $queryBuilder;
         return $this;
@@ -71,7 +71,7 @@ class QueryDataSource extends BaseDataSource
     /**
      * @return QueryBuilder
      */
-    public function getDataSource(): QueryBuilder
+    public function getDataProvider(): QueryBuilder
     {
         return $this->dataSource;
     }
@@ -166,7 +166,7 @@ class QueryDataSource extends BaseDataSource
      * @param string $rootAlias
      *
      * @return $this
-     * @throws DataSourceException
+     * @throws DataProviderException
      */
     public function setRootAlias(string $rootAlias): static
     {

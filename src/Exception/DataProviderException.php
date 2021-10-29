@@ -2,6 +2,6 @@
 
 namespace Tinustester\Bundle\GridviewBundle\Exception;
 
-class DataSourceException extends \Exception
+class DataProviderException extends \Exception
 {
 }

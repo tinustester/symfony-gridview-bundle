@@ -64,8 +64,8 @@ services:
       - '@router'
       - '@tt_grid.html'
 
-  tt_grid.query_data_source:
-    class: Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource
+  tt_grid.query_data_provider:
+    class: Tinustester\Bundle\GridviewBundle\DataProvider\QueryProvider
     shared: false
     arguments:
       - '@tt_grid.pagination'
@@ -83,5 +83,5 @@ services:
   Tinustester\Bundle\GridviewBundle\Component\Sort:
     alias: 'tt_grid.sort'
 
-  Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource:
-    alias: 'tt_grid.query_data_source'
+  Tinustester\Bundle\GridviewBundle\DataProvider\QueryDataProvider:
+    alias: 'tt_grid.query_data_provider'

@@ -50,7 +50,7 @@ class Column extends BaseColumn
         $label = $this->label ?: TextFormat::camelCaseToWord($this->attributeName);
 
         if ($this->sortable) {
-            $sort = $this->gridView->getDataSource()->getSort();
+            $sort = $this->gridView->getDataProvider()->getSort();
 
             $sortAttribute = $sort->hasAttribute($this->label) ? $label : ($sort->hasAttribute($this->attributeName)
                 ? $this->attributeName : null);

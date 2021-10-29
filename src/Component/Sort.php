@@ -340,7 +340,7 @@ class Sort
         $parameters = $this->request->query->all();
 
         // Reset paging param
-        $pageParamName = $gridview->getDataSource()?->getPagination()?->getPageParamName();
+        $pageParamName = $gridview->getDataProvider()?->getPagination()?->getPageParamName();
         if($pageParamName && isset($parameters[$pageParamName])){
             unset($parameters[$pageParamName]);
         }

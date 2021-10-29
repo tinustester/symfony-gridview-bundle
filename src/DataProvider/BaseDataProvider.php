@@ -1,12 +1,12 @@
 <?php
 
-namespace Tinustester\Bundle\GridviewBundle\DataSource;
+namespace Tinustester\Bundle\GridviewBundle\DataProvider;
 
 use Tinustester\Bundle\GridviewBundle\Component\Sort;
 use Tinustester\Bundle\GridviewBundle\Component\Pagination;
-use Tinustester\Bundle\GridviewBundle\Exception\DataSourceException;
+use Tinustester\Bundle\GridviewBundle\Exception\DataProviderException;
 
-abstract class BaseDataSource
+abstract class BaseDataProvider implements DataProviderInterface
 {
     /**
      * @var string Full class name of target entity.
@@ -42,7 +42,7 @@ abstract class BaseDataSource
     /**
      * @param Sort $sort
      *
-     * @return BaseDataSource
+     * @return BaseDataProvider
      */
     public function setSort(Sort $sort): static
     {
@@ -80,7 +80,7 @@ abstract class BaseDataSource
      * @param string $entityName
      *
      * @return $this
-     * @throws DataSourceException
+     * @throws DataProviderException
      */
     public function setEntityName(string $entityName): static
     {

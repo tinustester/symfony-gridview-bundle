@@ -7,8 +7,8 @@ use Tinustester\Bundle\GridviewBundle\Column\BaseColumn;
 use Tinustester\Bundle\GridviewBundle\Column\Column;
 use Tinustester\Bundle\GridviewBundle\Exception\GridException;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Tinustester\Bundle\GridviewBundle\DataSource\BaseDataSource;
-use Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource;
+use Tinustester\Bundle\GridviewBundle\DataProvider\BaseDataProvider;
+use Tinustester\Bundle\GridviewBundle\DataProvider\QueryDataProvider;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GridviewFactory
@@ -110,7 +110,7 @@ class GridviewFactory
      * @return $this
      * @throws GridException
      */
-    protected function setDataSource(array $gridViewData): static
+    protected function setDataProvider(array $gridViewData): static
     {
         if (empty($gridViewData['dataSource'])) {
             throw new GridException(
@@ -120,14 +120,14 @@ class GridviewFactory
 
         $dataSource = $gridViewData['dataSource'];
 
-        if (!($dataSource instanceof BaseDataSource)) {
+        if (!($dataSource instanceof BaseDataProvider)) {
             throw new GridException(
-                'Data source should be instance of '.BaseDataSource::class.'. '
+                'Data source should be instance of '.BaseDataProvider::class.'. '
                 .gettype($dataSource).' given.'
             );
         }
 
-        $this->gridView->setDataSource($dataSource);
+        $this->gridView->setDataProvider($dataSource);
 
         return $this;
     }
@@ -152,7 +152,7 @@ class GridviewFactory
 
         $formBuilder = $this->container->get('form.factory')
             ->createNamedBuilder(
-                $this->gridView->getDataSource()->getEntityShortName(),
+                $this->gridView->getDataProvider()->getEntityShortName(),
                 FormType::class,
                 $entityInstance,
                 [
@@ -228,7 +228,7 @@ class GridviewFactory
             $columns[] = ['attributeName' => $attribute];
         }
 
-        if ($gridViewData['dataSource'] instanceof QueryDataSource) {
+        if ($gridViewData['dataSource'] instanceof QueryDataProvider) {
             $columns[] = ['service' => 'tt_grid.action_column'];
         }
 
@@ -245,7 +245,7 @@ class GridviewFactory
     {
         if (
             empty($gridViewData['columnOptions']['excludeAttributes'])
-            || !($gridViewData['dataSource'] instanceof QueryDataSource)
+            || !($gridViewData['dataSource'] instanceof QueryDataProvider)
         ) {
             return $columns;
         }

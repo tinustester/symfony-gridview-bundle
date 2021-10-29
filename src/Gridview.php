@@ -4,8 +4,8 @@ namespace Tinustester\Bundle\GridviewBundle;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Tinustester\Bundle\GridviewBundle\Column\BaseColumn;
-use Tinustester\Bundle\GridviewBundle\DataSource\BaseDataSource;
-use Tinustester\Bundle\GridviewBundle\DataSource\QueryDataSource;
+use Tinustester\Bundle\GridviewBundle\DataProvider\BaseDataProvider;
+use Tinustester\Bundle\GridviewBundle\DataProvider\QueryDataProvider;
 use Tinustester\Bundle\GridviewBundle\Exception\GridException;
 use Tinustester\Bundle\GridviewBundle\Helper\Html;
 
@@ -86,9 +86,9 @@ class Gridview
     protected static int $gridCounter = 0;
 
     /**
-     * @var QueryDataSource
+     * @var QueryDataProvider
      */
-    protected QueryDataSource $dataSource;
+    protected QueryDataProvider $dataSource;
 
     /**
      * @var FormBuilder
@@ -332,9 +332,9 @@ class Gridview
     }
 
     /**
-     * @return QueryDataSource
+     * @return QueryDataProvider
      */
-    public function getDataSource(): QueryDataSource
+    public function getDataProvider(): QueryDataProvider
     {
         return $this->dataSource;
     }
@@ -376,11 +376,11 @@ class Gridview
     }
 
     /**
-     * @param BaseDataSource $dataSource
+     * @param BaseDataProvider $dataSource
      *
      * @return $this
      */
-    public function setDataSource(BaseDataSource $dataSource): static
+    public function setDataProvider(BaseDataProvider $dataSource): static
     {
         $this->dataSource = $dataSource;
 

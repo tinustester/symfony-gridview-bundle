@@ -88,7 +88,7 @@ class Gridview
     /**
      * @var QueryDataProvider
      */
-    protected QueryDataProvider $dataSource;
+    protected QueryDataProvider $dataProvider;
 
     /**
      * @var FormBuilder
@@ -178,7 +178,7 @@ class Gridview
     {
         $tableBody = '<tbody>';
 
-        $dataEntities = $this->dataSource->fetchEntities();
+        $dataEntities = $this->dataProvider->fetchEntities();
 
         foreach ($dataEntities as $index => $entity) {
             $tableBody .= $this->renderTableRow($entity, $index);
@@ -336,7 +336,7 @@ class Gridview
      */
     public function getDataProvider(): QueryDataProvider
     {
-        return $this->dataSource;
+        return $this->dataProvider;
     }
 
     /**
@@ -376,13 +376,13 @@ class Gridview
     }
 
     /**
-     * @param BaseDataProvider $dataSource
+     * @param BaseDataProvider $dataProvider
      *
      * @return $this
      */
-    public function setDataProvider(BaseDataProvider $dataSource): static
+    public function setDataProvider(BaseDataProvider $dataProvider): static
     {
-        $this->dataSource = $dataSource;
+        $this->dataProvider = $dataProvider;
 
         return $this;
     }

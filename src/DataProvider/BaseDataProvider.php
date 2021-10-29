@@ -6,7 +6,7 @@ use Tinustester\Bundle\GridviewBundle\Component\Sort;
 use Tinustester\Bundle\GridviewBundle\Component\Pagination;
 use Tinustester\Bundle\GridviewBundle\Exception\DataProviderException;
 
-abstract class BaseDataProvider implements DataProviderInterface
+abstract class BaseDataProvider
 {
     /**
      * @var string Full class name of target entity.
@@ -16,7 +16,7 @@ abstract class BaseDataProvider implements DataProviderInterface
     /**
      * @var mixed
      */
-    protected \Doctrine\ORM\QueryBuilder $dataSource;
+    protected \Doctrine\ORM\QueryBuilder $dataProvider;
 
     /**
      * @var Pagination
@@ -73,7 +73,7 @@ abstract class BaseDataProvider implements DataProviderInterface
      */
     public function getTotalCount(): int
     {
-        return count($this->dataSource);
+        return count($this->dataProvider);
     }
 
     /**

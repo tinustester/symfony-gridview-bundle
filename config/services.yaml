@@ -65,7 +65,7 @@ services:
       - '@tt_grid.html'
 
   tt_grid.query_data_provider:
-    class: Tinustester\Bundle\GridviewBundle\DataProvider\QueryProvider
+    class: Tinustester\Bundle\GridviewBundle\DataProvider\QueryDataProvider
     shared: false
     arguments:
       - '@tt_grid.pagination'

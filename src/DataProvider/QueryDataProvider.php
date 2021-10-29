@@ -19,7 +19,7 @@ class QueryDataProvider extends BaseDataProvider
     /**
      * @var QueryBuilder
      */
-    protected QueryBuilder $dataSource;
+    protected QueryBuilder $dataProvider;
 
     /**
      * @var ServiceEntityRepository
@@ -44,17 +44,17 @@ class QueryDataProvider extends BaseDataProvider
     public function fetchEntities()
     {
         $this->pagination->setTotalCount($this->getTotalCount());
-        $this->dataSource
+        $this->dataProvider
             ->setMaxResults($this->pagination->getPageSize())
             ->setFirstResult($this->pagination->getOffset());
 
         $sortParams = $this->getSort()->fetchOrders();
 
         foreach ($sortParams as $fieldName => $sortType) {
-            $this->dataSource->addOrderBy($fieldName, $sortType);
+            $this->dataProvider->addOrderBy($fieldName, $sortType);
         }
 
-        return $this->dataSource->getQuery()->getResult();
+        return $this->dataProvider->getQuery()->getResult();
     }
 
     /**
@@ -64,7 +64,7 @@ class QueryDataProvider extends BaseDataProvider
      */
     public function setDataProvider(QueryBuilder $queryBuilder): static
     {
-        $this->dataSource = $queryBuilder;
+        $this->dataProvider = $queryBuilder;
         return $this;
     }
 
@@ -73,7 +73,7 @@ class QueryDataProvider extends BaseDataProvider
      */
     public function getDataProvider(): QueryBuilder
     {
-        return $this->dataSource;
+        return $this->dataProvider;
     }
 
     /**
@@ -135,7 +135,7 @@ class QueryDataProvider extends BaseDataProvider
             return [];
         }
 
-        return $entityFields = $this->dataSource->getEntityManager()
+        return $entityFields = $this->dataProvider->getEntityManager()
             ->getClassMetadata($this->entityName)->getFieldNames();
     }
 

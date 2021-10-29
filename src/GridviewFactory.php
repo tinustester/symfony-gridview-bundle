@@ -112,22 +112,22 @@ class GridviewFactory
      */
     protected function setDataProvider(array $gridViewData): static
     {
-        if (empty($gridViewData['dataSource'])) {
+        if (empty($gridViewData['dataProvider'])) {
             throw new GridException(
                 'Grid view data source should be specified.'
             );
         }
 
-        $dataSource = $gridViewData['dataSource'];
+        $dataProvider = $gridViewData['dataProvider'];
 
-        if (!($dataSource instanceof BaseDataProvider)) {
+        if (!($dataProvider instanceof BaseDataProvider)) {
             throw new GridException(
                 'Data source should be instance of '.BaseDataProvider::class.'. '
-                .gettype($dataSource).' given.'
+                .gettype($dataProvider).' given.'
             );
         }
 
-        $this->gridView->setDataProvider($dataSource);
+        $this->gridView->setDataProvider($dataProvider);
 
         return $this;
     }
@@ -222,13 +222,13 @@ class GridviewFactory
             return array_merge($columns, $gridViewData['columns']);
         }
 
-        $entityAttributes = $gridViewData['dataSource']->fetchEntityFields();
+        $entityAttributes = $gridViewData['dataProvider']->fetchEntityFields();
 
         foreach ($entityAttributes as $attribute) {
             $columns[] = ['attributeName' => $attribute];
         }
 
-        if ($gridViewData['dataSource'] instanceof QueryDataProvider) {
+        if ($gridViewData['dataProvider'] instanceof QueryDataProvider) {
             $columns[] = ['service' => 'tt_grid.action_column'];
         }
 
@@ -245,7 +245,7 @@ class GridviewFactory
     {
         if (
             empty($gridViewData['columnOptions']['excludeAttributes'])
-            || !($gridViewData['dataSource'] instanceof QueryDataProvider)
+            || !($gridViewData['dataProvider'] instanceof QueryDataProvider)
         ) {
             return $columns;
         }

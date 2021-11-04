@@ -3,6 +3,7 @@
 namespace Tinustester\Bundle\GridviewBundle;
 
 use Exception;
+use Symfony\Component\Form\FormBuilder;
 use Tinustester\Bundle\GridviewBundle\Column\BaseColumn;
 use Tinustester\Bundle\GridviewBundle\Column\Column;
 use Tinustester\Bundle\GridviewBundle\Exception\GridException;
@@ -51,6 +52,10 @@ class GridviewFactory
     protected function initColumns(array $columns): static
     {
         foreach ($columns as $columnData) {
+
+            if(is_string($columnData)){
+                $columnData = ['attributeName' => $columnData];
+            }
 
             if (array_key_exists('service', $columnData)) {
                 $column = $this->container->get($columnData['service']);
@@ -150,6 +155,7 @@ class GridviewFactory
             );
         }
 
+        /** @var FormBuilder $formBuilder */
         $formBuilder = $this->container->get('form.factory')
             ->createNamedBuilder(
                 $this->gridView->getDataProvider()->getEntityShortName(),

@@ -153,6 +153,7 @@ class Gridview
      * Renders grid table.
      *
      * @return string
+     * @throws Exception\PaginationException
      */
     protected function renderTable(): string
     {
